@@ -1,0 +1,34 @@
+name: Sync to Hugging Face
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: false
+
+      - name: Push to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git clone https://huggingface.co/spaces/aetherporium/expert-agent temp-hf
+          cd temp-hf
+          git config user.email "action@github.com"
+          git config user.name "GitHub Actions"
+          # Remove .git and re-init as fresh push
+          cd ..
+          rm -rf temp-hf/.git
+          cp -r expert-agent-template/* temp-hf/
+          cd temp-hf
+          git init
+          git add .
+          git commit -m "Sync from GitHub"
+          git push https://HF_TOKEN@huggingface.co/spaces/aetherporium/expert-agent main --force
