@@ -15,6 +15,6 @@ def save_notebook(name, data):
     supabase = get_client()
     existing = load_notebook(name)
     if existing:
-        supabase.table("expert_agents").update({"notebook_data": data, "updated_at": "now()"}).eq("name", name).execute()
+        supabase.table("expert_agents").update({"notebook_data": data}).eq("name", name).execute()
     else:
         supabase.table("expert_agents").insert({"name": name, "notebook_data": data}).execute()
